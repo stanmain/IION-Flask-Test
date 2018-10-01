@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<p>{{ text }}</p>
+<p>Server: {{ moment(date).format('dddd, DD MMMM YYYY, HH:mm:ss') }}</p>
+<p>UTC: {{ moment(utc).format('dddd, DD MMMM YYYY, HH:mm:ss') }}</p>
+<p>Local: {{ moment(utc).format('LLLL') }}</p>
+<!-- <p>JS: <span id="datetime"></span></p> -->
+<p>
+    JS: <span id="datetime"></span>
+</p>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+var datetime = null;
+
+var update = function () {
+    datetime.text(moment(new Date()).format('dddd, DD MMMM YYYY, HH:mm:ss'));
+};
+
+$(document).ready(function(){
+    datetime = $('#datetime')
+    update();
+    setInterval(update, 1000);
+});
+
+</script>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<div id="chart_div" style="height: 50vh;"></div>
+<div id="charts"></div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', {packages: ['corechart', 'line']});
+    google.charts.setOnLoadCallback(draw);
+
+    function draw() {
+        $.ajax("{{ url_for('data.date') }}").done(function(response) {
+            var data = new google.visualization.DataTable();
+            Array.from(response['cols']).forEach(element => {
+                data.addColumn('number', element);                
+            });
+            data.addRows(response['rows']);
+
+            var options = {
+                chartArea: {top: '5%', right: 0, width: '95%', height: '75%'},
+                hAxis: {
+                    title: 'Time',
+                    ticks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                        13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
+                },
+                curveType: 'function',
+                vAxis: {title: 'Point'},
+                legend: { position: 'bottom' },
+                title: 'lololo',
+            };
+
+            var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+            chart.draw(data, options);
+            console.log('go 1');
+            $('#charts').append('<div id="1"></div>')
+            console.log('go 2');
+            $('#charts').append('<div id="2"></div>')
+        }).fail(function() {
+            $('#chart_div').text("Error");
+        });
+  }
+</script>
+{% endblock %}

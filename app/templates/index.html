@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<h2 id="time">Последние данные {{ moment(time).format('LLL') }}</h2>
+{% for category in data %}
+<div class="panel panel-default">
+  <div id="{{ category.name }}" class="panel-heading">{{ category.name }}, {{ category.measure }} ({{ category.description }})</div>
+  <div class="panel-body">
+  <table class="table table-condensed table-hover">
+    <tr>
+      <th class="col-xs-1 col-md-1" scope="col">Значение</th>
+      <th class="col-xs-3 col-md-3" scope="col">Имя</th>
+      <th class="col-xs-3 col-md-3" scope="col">Адресс</th>
+      <th class="col-xs-6 col-md-6" scope="col">Пояснение</th>
+    </tr>
+    {% for sensor in category.sensors %}
+    <tr>
+      <td class="col-xs-1 col-md-1">{{ sensor.value }}</td>
+      <td class="col-xs-3 col-md-3">{{ sensor.name }}</td>
+      <td class="col-xs-3 col-md-3">{{ sensor.code }}</td>
+      <td class="col-xs-6 col-md-6">{{ sensor.description }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}

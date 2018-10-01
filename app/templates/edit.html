@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<div id="flash" class="flashes"></div>
+
+{% for category in data %}
+<div class="panel panel-default">
+  <div id="{{ category.name }}" class="panel-heading">{{ category.name }}</div>
+  <div class="panel-body text-muted">Редактировать категорию:</div>
+  <div class="panel-body">
+  <table class="table table-condensed table-hover">
+    <tr>
+      <th class="col-md-2" scope="col">Имя</th>
+      <th class="col-md-2" scope="col">Мера</th>
+      <th class="col-md-4" scope="col">Пояснение</th>
+      <th class="col-md-1" scope="col">Доступ</th>
+      <th class="col-md-2" scope="col">Отклик</th>
+      <th class="col-md-1" scope="col">#</th>
+    </tr>
+    <tr>
+      <form action="{{ url_for('main.edit_category') }}" method="POST" autosubmit>
+        {{ category_form.csrf_token() }}
+        {{ category_form.id(value=category.id, ) }}
+        <td class="col-md-2 input-group-sm">{{ category_form.name(value=category.name, class="form-control") }}</td>
+        <td class="col-md-2 input-group-sm">{{ category_form.measure(value=category.measure, class="form-control") }}</td>
+        <td class="col-md-4 input-group-sm">{{ category_form.description(value=category.description, class="form-control") }}</td>
+        <td class="col-md-1 middle">
+          {% if category.enabled %}
+            <input id="enabled" name="enabled" type="checkbox" checked>
+          {% else %}
+            <input id="enabled" name="enabled" type="checkbox">
+          {% endif %}
+        </td>
+        <td class="col-md-2 middle">{{ moment(category.time_id).format('lll') }}</td>
+        <td class="col-md-1">
+          <label for="submit{{ category.name }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-edit"></span> Edit</label>
+          <input id="submit{{ category.name }}" type="submit" value="change" class="hidden"/>
+        </td>
+      </form>
+    </tr>
+  </table>
+  </div>
+  <div class="panel-body text-muted">Редактировать сенсоры:</div>
+  <div class="panel-body">
+  <table class="table table-condensed table-hover">
+    <tr>
+      <th class="col-md-2" scope="col">Адресс</th>
+      <th class="col-md-2" scope="col">Имя</th>
+      <th class="col-md-4" scope="col">Пояснение</th>
+      <th class="col-md-1" scope="col">Доступ</th>
+      <th class="col-md-2" scope="col">Отклик</th>
+      <th class="col-md-1" scope="col">#</th>
+    </tr>
+    {% for sensor in category.sensors %}
+    <tr>
+      <form id="{{ sensor.code }}" action="{{ url_for('main.edit_sensor') }}" method="POST" autosubmit >
+        {{ sensor_form.csrf_token() }}
+        {{ sensor_form.id(value=sensor.id, ) }}
+        <td class="col-md-2 middle">{{ sensor.code }}</td>
+        <td class="col-md-2 input-group-sm">{{ sensor_form.name(value=sensor.name, class="form-control") }}</td>
+        <td class="col-md-4 input-group-sm">{{ sensor_form.description(value=sensor.description, class="form-control") }}</td>
+        <td class="col-md-1 middle">
+          {% if sensor.enabled %}
+            <input id="enabled" name="enabled" type="checkbox" checked>
+          {% else %}
+            <input id="enabled" name="enabled" type="checkbox">
+          {% endif %}
+        </td>
+        <td class="col-md-2 middle">{{ moment(sensor.time_id).format('lll') }}</td>
+        <td class="col-md-1">
+          <label for="submit{{ sensor.id }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-edit"></span> Edit</label>
+          <input id="submit{{ sensor.id }}" type="submit" value="change" class="hidden"/>
+        </td>
+      </form>
+    </tr>
+    {% endfor %}
+  </table>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+(function($) {
+  $.fn.autosubmit = function() {
+    this.submit(function(event) {
+      event.preventDefault();
+      var form = $(this);
+      $.ajax({
+        type: form.attr('method'),
+        url: form.attr('action'),
+        data: form.serialize()
+      }).done(function(response) {
+        console.log(response);
+        $('#flash').text('');
+        if (response.success) {
+          $('#flash').append(
+            '<div class="alert alert-success" role="alert">' +
+            response.name  + ', ' + response.description  + ', ' + response.enabled  + ': ' + response['success'] +
+            '</div>');  
+          if (response.old) {
+            $('#' + response.old).text(response.name);
+            console.log(response.old);
+          };
+        } else {
+        for (item in response) {
+          $('#flash').append(
+            '<div class="alert alert-warning" role="alert">' +
+            item + ': ' + response[item] +
+            '</div>');
+          }
+        }
+      }).fail(function(response) {
+        $('#flash').append('<div class="alert alert-danger" role="alert">Error</div>');
+      });
+    });
+    return this;
+  }
+})(jQuery)
+
+$(function() {
+  $('form[autosubmit]').autosubmit();
+});
+</script>
+{% endblock %}

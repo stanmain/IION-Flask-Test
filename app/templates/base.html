@@ -1,0 +1,81 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block title %}
+{% if title %} {{ title }} {% else %} IION-Monitor {% endif %}
+{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#collapse-1"
+        aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="{{ url_for('main.index') }}">IION Monitor</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="nav-ref {{ main_index }}">
+          <a href="{{ url_for('main.index') }}">Now</a>
+        </li>
+        <li class="nav-ref {{ main_today }}">
+          <a href="{{ url_for('main.today') }}">Today</a>
+        </li>
+        <li class="nav-ref {{ main_edit }}">
+          <a href="{{ url_for('main.edit') }}">Edit</a>
+        </li>
+        <li class="nav-ref {{ main_archive }}">
+          <a href="{{ url_for('main.archive') }}">Archive</a>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+{% block app_content %} {% endblock %}
+</div>
+
+<div class="container footer">
+  <footer class="navbar navbar-inverse bottom-null">
+    <div class="container-fluid">
+      <div class="navbar-default">
+        <p class="navbar-text copyright">
+          Copyright © 2018 Stanislav Hnatiuk. All rights reserved.
+        </p>
+      </div>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+          <a href="https://t.me/stanmain">Telegram</a>
+        </li>
+        <li>
+          <a href="https://github.com/stanmain">GitHub</a>
+        </li>
+        <li class="separator">
+          <a href="http://iion.org.ua">IION </a>
+        </li>
+      </ul>
+    </div>
+  </footer>
+</div>
+{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<link href="{{ url_for('static', filename='base.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment() }}
+{{ moment.lang('ru') }}
+{% endblock %}
